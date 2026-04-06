@@ -1,16 +1,20 @@
-# This is a sample Python script.
+import requests
+#import json
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+def getAlert(s):
+    # Add a check to see if it's a real state
+    html = requests.get(f'https://api.weather.gov/alerts/active?area={s}').text
+    return html
 
+def getForcast():
+    html = requests.get(f'https://api.weather.gov/points/{38.256111},{-85.751389}').text
+    return html
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    #state = str(input("Input State (e.g. WA): "))
+    #alert = getAlert(state)
+    forcast = getForcast()
+    print(forcast)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+
