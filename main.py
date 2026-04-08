@@ -21,24 +21,35 @@ def getAlerts(s: str):
         print(f"Error: {response.status_code}")
 
 
-def getForcast():
-    #url = (f'https://api.weather.gov/points/{38.256111},{-85.751389}')
-    url = (f'https://api.weather.gov/gridpoints/{"LMK"}/{50},{78}/forecast')
+def getForcast(lat, lon):
+    url = (f'https://api.weather.gov/gridpoints/{"LMK"}/{lat},{lon}/forecast')
     response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
-        response = response.json()
-        response = json.dumps(response, indent=2)
-        print(response)
+        data = response.json()
+
+
+        ##### data["properties"]['periods'] will have most of the info I am looking for. #####
+
+        # for x in data["properties"]['periods']:
+        #     print(x)
+
+        for i in range(len(data["properties"]['periods'])):
+            print(data["properties"]["periods"][i]["name"])
+            print(data["properties"]['periods'][i]["temperature"], data["properties"]['periods'][i]["temperatureUnit"])
+            print(data["properties"]["periods"][i]["detailedForecast"])
+            print("-" * 200)
+
     else:
         print(f"Error: {response.status_code}")
 
 if __name__ == '__main__':
 
-    state = str(input("Input State (e.g. WA): "))
-    getAlerts(state)
-    print("------------------------------")
-    getForcast()
+    #state = str(input("Input State (e.g. WA): "))
+    #getAlerts(state)
+    # print("-" * 20)
+
+    getForcast(50, 78)
 
 
 
