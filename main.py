@@ -1,57 +1,67 @@
-import json
-import requests
+import customtkinter as ctk
 
-headers = {
-    'User-Agent': 'jakobschroll06@gmail.com'
-}
+from API_Calls import getAlerts, getForcast
 
-def getAlerts(s: str):
-    url = (f'https://api.weather.gov/alerts/active?area={s}')
-    response = requests.get(url, headers=headers)
+class Display(ctk.CTk):
+    def __init__(self):
+        super().__init__()
+        self.label = None
+        self.scrollingFrame = None
 
-    if response.status_code == 200:
-        data = response.json()
-        if len(data['features']) == 0:
-            print("No warnings")
-            return
+        self.title("Weather App")
+        self.geometry("640x480")
 
-        for x in data['features']:
+        self.mainColor = "#7d812c"
+        self.accentColor = "#dfdfde"
+        self.textColor = "#224e4e"
+        self.textFont = "Courier"
 
-            print(x["properties"]["event"])
-            print(x["properties"]["description"])
-            print("-" * 200)
-    else:
-        print(f"Error: {response.status_code}")
+        self.configure(fg_color=self.mainColor)
+
+        self.MakeMenu()
 
 
-def getForcast(lat, lon):
-    url = (f'https://api.weather.gov/gridpoints/{"LMK"}/{lat},{lon}/forecast')
-    response = requests.get(url, headers=headers)
+    def MakeMenu(self):
+        # Title Label
+        self.label = ctk.CTkLabel(self, text="WEATHER", font=(self.textFont, 28, "bold"), text_color=self.textColor)
+        self.label.pack(pady=20)
 
-    if response.status_code == 200:
-        data = response.json()
+        # Scrolling Frame
+        self.scrollingFrame = ctk.CTkScrollableFrame(self, fg_color=self.accentColor, corner_radius=0)
+        self.scrollingFrame.pack(padx=20, pady=20, fill="both", expand=True)
+        self.AddForcast()
 
-        for i in range(len(data["properties"]['periods'])):
-            print(data["properties"]["periods"][i]["name"])
-            print(f"Temperature: {data["properties"]['periods'][i]["temperature"]}{data["properties"]['periods'][i]["temperatureUnit"]}")
-            print(data["properties"]["periods"][i]["detailedForecast"])
-            print(f"Wind Speed: {data["properties"]["periods"][i]["windSpeed"]}")
-            print("-" * 200)
+    def AddForcast(self):
+        #Clear (Not used at the moment)
+        for i in self.scrollingFrame.winfo_children():
+            i.destroy()
 
-    else:
-        print(f"Error: {response.status_code}")
+        # Change at somepoint to input any lat and lon
+        forcast = getForcast(50,78)
+
+        if forcast:
+            for i in range(len(forcast)):
+
+                lbl = ctk.CTkLabel(
+                    self.scrollingFrame,
+                    text=f"• {forcast[i]['name']}: {forcast[i]['detailedForecast']}",
+                    text_color=self.textColor,
+                    font=(self.textFont, 14, "bold"),
+                    wraplength=500,
+                    justify="left"
+                )
+
+                lbl.pack(anchor="w", padx=20, pady=5)
 
 if __name__ == '__main__':
+    app = Display()
+    app.mainloop()
 
     # state = str(input("Input State (e.g. WA): "))
-    state = "KY"
-    getAlerts(state)
-    print("#" * 200)
-
-    getForcast(50, 78)
-
-
-
-
-
+    # state = "KY"
+    # print(getAlerts(state))
+    #
+    # print("#" * 200)
+    #
+    # print(getForcast(50, 78))
 
